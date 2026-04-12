@@ -1,0 +1,96 @@
+{
+  "quotidiennes": {
+    "sante": [
+      {"id":"d_sante_1","titre":"Marcher 15 minutes","description":"Une simple promenade pour activer le corps","xp":20,"difficulte":2,"dureeEstimeeMin":15,"sousTaches":["Enfiler les chaussures","Sortir","Marcher 15 min"],"estQuickWin":true},
+      {"id":"d_sante_2","titre":"Boire 2L d'eau","description":"L'hydratation est la base de tout","xp":15,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_sante_3","titre":"5 minutes d'étirements","description":"Détendre le corps, surtout après le bureau","xp":15,"difficulte":1,"dureeEstimeeMin":5,"sousTaches":["Étirer le cou","Étirer le dos","Étirer les jambes"],"estQuickWin":true},
+      {"id":"d_sante_4","titre":"Préparer un repas sain","description":"Cuisiner quelque chose de nutritif","xp":30,"difficulte":4,"dureeEstimeeMin":30,"sousTaches":["Choisir une recette","Préparer les ingrédients","Cuisiner","Manger sans écran"],"estQuickWin":false},
+      {"id":"d_sante_5","titre":"Se coucher avant 23h","description":"Le sommeil est l'arme secrète","xp":25,"difficulte":3,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_sante_6","titre":"10 pompes ou squats","description":"Micro-exercice — juste 2 minutes","xp":15,"difficulte":2,"dureeEstimeeMin":2,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_sante_7","titre":"Méditer 5 minutes","description":"Calmer l'esprit TDAH — même 5 min comptent","xp":20,"difficulte":3,"dureeEstimeeMin":5,"sousTaches":["S'asseoir confortablement","Fermer les yeux","Respirer 5 min"],"estQuickWin":true},
+      {"id":"d_sante_8","titre":"Prendre l'air à la pause déjeuner","description":"Sortir du cabinet, respirer, déconnecter","xp":15,"difficulte":1,"dureeEstimeeMin":10,"sousTaches":[],"estQuickWin":true}
+    ],
+    "carriere": [
+      {"id":"d_carriere_1","titre":"Faire un point avec un collaborateur","description":"5 min de suivi avec un membre de l'équipe","xp":25,"difficulte":3,"dureeEstimeeMin":5,"sousTaches":["Identifier qui a besoin de suivi","Poser 2 questions","Noter les actions"],"estQuickWin":true},
+      {"id":"d_carriere_2","titre":"Valider 3 dossiers en attente","description":"Avancer sur la pile de validation","xp":35,"difficulte":5,"dureeEstimeeMin":30,"sousTaches":["Ouvrir le premier dossier","Vérifier les écritures","Valider ou annoter","Passer au suivant"],"estQuickWin":false},
+      {"id":"d_carriere_3","titre":"Appeler un client pour suivi","description":"Maintenir la relation, prendre des nouvelles","xp":25,"difficulte":4,"dureeEstimeeMin":10,"sousTaches":["Choisir le client","Préparer 2 points à aborder","Appeler"],"estQuickWin":false},
+      {"id":"d_carriere_4","titre":"Répondre à 5 mails prioritaires","description":"Vider la boîte des urgences","xp":20,"difficulte":3,"dureeEstimeeMin":15,"sousTaches":["Ouvrir la boîte mail","Traiter les 5 plus urgents"],"estQuickWin":false},
+      {"id":"d_carriere_5","titre":"Préparer l'ordre du jour réunion associés","description":"Structurer les points clés pour la prochaine réunion","xp":30,"difficulte":5,"dureeEstimeeMin":20,"sousTaches":["Lister les sujets","Prioriser","Rédiger l'OJ"],"estQuickWin":false},
+      {"id":"d_carriere_6","titre":"Relancer un devis en attente","description":"Suivre les propositions commerciales","xp":20,"difficulte":3,"dureeEstimeeMin":5,"sousTaches":["Identifier le devis","Préparer le message","Envoyer"],"estQuickWin":true},
+      {"id":"d_carriere_7","titre":"Consulter les indicateurs du pôle","description":"Vérifier la productivité de l'équipe","xp":20,"difficulte":3,"dureeEstimeeMin":10,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_carriere_8","titre":"Préparer un point trimestriel client","description":"Analyser la situation et préparer le rendez-vous","xp":40,"difficulte":6,"dureeEstimeeMin":30,"sousTaches":["Extraire les chiffres","Identifier les points clés","Préparer le support"],"estQuickWin":false}
+    ],
+    "croissance": [
+      {"id":"d_crois_1","titre":"Lire 15 min de veille réglementaire","description":"Rester à jour sur les évolutions fiscales et comptables","xp":25,"difficulte":3,"dureeEstimeeMin":15,"sousTaches":["Ouvrir les sources de veille","Lire 15 min","Noter 1 point clé"],"estQuickWin":false},
+      {"id":"d_crois_2","titre":"Compléter un module de formation","description":"Avancer sur une formation en ligne","xp":40,"difficulte":5,"dureeEstimeeMin":30,"sousTaches":["Ouvrir la plateforme","Suivre le module","Prendre des notes"],"estQuickWin":false},
+      {"id":"d_crois_3","titre":"Partager une info utile à l'équipe","description":"Transmettre un savoir — la générosité intellectuelle","xp":20,"difficulte":2,"dureeEstimeeMin":5,"sousTaches":["Identifier l'info","La partager via Teams/mail"],"estQuickWin":true},
+      {"id":"d_crois_4","titre":"Écouter un podcast métier (15 min)","description":"Apprendre en marchant ou en conduisant","xp":20,"difficulte":2,"dureeEstimeeMin":15,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_crois_5","titre":"Écrire 5 min dans le journal","description":"Réflexion libre — capturer les pensées du jour","xp":20,"difficulte":3,"dureeEstimeeMin":5,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_crois_6","titre":"Apprendre 1 raccourci clavier/outil","description":"Micro-optimisation quotidienne","xp":10,"difficulte":1,"dureeEstimeeMin":2,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_crois_7","titre":"Lire 10 pages d'un livre","description":"Avancer sur une lecture en cours","xp":25,"difficulte":3,"dureeEstimeeMin":15,"sousTaches":[],"estQuickWin":false},
+      {"id":"d_crois_8","titre":"Travailler 30 min sur une compétence technique","description":"Deep work sur une compétence à développer","xp":35,"difficulte":5,"dureeEstimeeMin":30,"sousTaches":["Choisir la compétence","Timer 30 min","Pratiquer"],"estQuickWin":false}
+    ],
+    "relations": [
+      {"id":"d_rel_1","titre":"Envoyer un message à un ami","description":"Maintenir les liens — un simple message suffit","xp":15,"difficulte":1,"dureeEstimeeMin":2,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_rel_2","titre":"Compliment sincère à un collaborateur","description":"Reconnaître le travail de quelqu'un","xp":15,"difficulte":2,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_rel_3","titre":"Déjeuner avec un collègue","description":"Créer du lien hors contexte de travail","xp":25,"difficulte":3,"dureeEstimeeMin":45,"sousTaches":[],"estQuickWin":false},
+      {"id":"d_rel_4","titre":"Appeler un proche","description":"Prendre des nouvelles de la famille ou d'un ami","xp":20,"difficulte":2,"dureeEstimeeMin":10,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_rel_5","titre":"Mentorer un junior pendant 10 min","description":"Partager son expérience avec un collaborateur junior","xp":30,"difficulte":4,"dureeEstimeeMin":10,"sousTaches":["Identifier un junior","Poser une question ouverte","Écouter et conseiller"],"estQuickWin":false},
+      {"id":"d_rel_6","titre":"Remercier quelqu'un aujourd'hui","description":"La gratitude renforce les relations","xp":10,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_rel_7","titre":"Organiser un moment en famille","description":"Planifier ou vivre un moment de qualité","xp":30,"difficulte":3,"dureeEstimeeMin":5,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_rel_8","titre":"Écouter activement sans interrompre","description":"Pratiquer l'écoute dans la prochaine conversation","xp":15,"difficulte":3,"dureeEstimeeMin":5,"sousTaches":[],"estQuickWin":true}
+    ],
+    "general": [
+      {"id":"d_gen_1","titre":"Ranger son bureau (5 min)","description":"Un espace clair = un esprit clair","xp":15,"difficulte":1,"dureeEstimeeMin":5,"sousTaches":["Trier les papiers","Ranger le matériel","Nettoyer la surface"],"estQuickWin":true},
+      {"id":"d_gen_2","titre":"Planifier la journée de demain","description":"5 min ce soir pour gagner 1h demain","xp":20,"difficulte":2,"dureeEstimeeMin":5,"sousTaches":["Lister les 3 priorités","Bloquer du temps","Préparer le matériel"],"estQuickWin":true},
+      {"id":"d_gen_3","titre":"1 tâche administrative personnelle","description":"Facture, papier, RDV — 1 truc de la pile","xp":20,"difficulte":3,"dureeEstimeeMin":10,"sousTaches":[],"estQuickWin":false},
+      {"id":"d_gen_4","titre":"Faire une pause déconnectée","description":"10 min sans écran, sans téléphone","xp":15,"difficulte":2,"dureeEstimeeMin":10,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_gen_5","titre":"Vérifier ses finances personnelles","description":"Un coup d'œil rapide aux comptes","xp":20,"difficulte":3,"dureeEstimeeMin":5,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_gen_6","titre":"Prendre 3 grandes respirations","description":"Reset physiologique en 30 secondes","xp":5,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_gen_7","titre":"Poser un objectif pour la semaine","description":"1 objectif clair, mesurable, atteignable","xp":25,"difficulte":3,"dureeEstimeeMin":5,"sousTaches":[],"estQuickWin":true},
+      {"id":"d_gen_8","titre":"Supprimer 5 mails inutiles","description":"Désencombrement numérique rapide","xp":10,"difficulte":1,"dureeEstimeeMin":3,"sousTaches":[],"estQuickWin":true}
+    ]
+  },
+  "hebdomadaires": [
+    {"id":"w_1","titre":"Maintenir 5 jours d'activité cette semaine","description":"Pas 7, pas 3 — 5 jours suffisent","domaine":"general","xp":150,"difficulte":5,"sousTaches":[]},
+    {"id":"w_2","titre":"Compléter 10 sessions de focus","description":"Pomodoro ou deep work — accumuler les sessions","domaine":"croissance","xp":120,"difficulte":6,"sousTaches":[]},
+    {"id":"w_3","titre":"Résoudre toutes les tâches urgentes","description":"Vider le quadrant urgent+important","domaine":"carriere","xp":150,"difficulte":7,"sousTaches":[]},
+    {"id":"w_4","titre":"Avoir un RDV de développement avec un collab","description":"Investir dans l'humain — c'est ça le management","domaine":"relations","xp":100,"difficulte":5,"sousTaches":["Identifier le collaborateur","Planifier le RDV","Conduire l'entretien"]},
+    {"id":"w_5","titre":"Faire 3 sessions de sport","description":"Bouger le corps 3 fois dans la semaine","domaine":"sante","xp":120,"difficulte":5,"sousTaches":[]},
+    {"id":"w_6","titre":"Compléter tous les rituels matin cette semaine","description":"Le rituel stoïque du matin, 5 jours sur 5","domaine":"croissance","xp":130,"difficulte":6,"sousTaches":[]},
+    {"id":"w_7","titre":"Revue hebdomadaire complète","description":"Prendre du recul, analyser, ajuster","domaine":"general","xp":100,"difficulte":4,"sousTaches":["Bilan de la semaine","Ce qui a marché","Ce qui a bloqué","3 priorités semaine prochaine"]},
+    {"id":"w_8","titre":"Zéro tâche en retard en fin de semaine","description":"Tout est traité, rien ne traîne","domaine":"carriere","xp":140,"difficulte":7,"sousTaches":[]},
+    {"id":"w_9","titre":"Lire un chapitre complet d'un livre","description":"Avancer significativement dans une lecture","domaine":"croissance","xp":100,"difficulte":4,"sousTaches":[]},
+    {"id":"w_10","titre":"1 moment de qualité avec un proche","description":"Pas de téléphone, présent à 100%","domaine":"relations","xp":110,"difficulte":4,"sousTaches":[]}
+  ],
+  "mensuelles": [
+    {"id":"m_1","titre":"Zéro retard fiscal ce mois","description":"Toutes les déclarations et échéances respectées","domaine":"carriere","xp":500,"difficulte":8,"sousTaches":[]},
+    {"id":"m_2","titre":"Atteindre 20 sessions Focus dans le mois","description":"Deep work régulier tout le mois","domaine":"croissance","xp":400,"difficulte":7,"sousTaches":[]},
+    {"id":"m_3","titre":"Compléter 80% des quêtes quotidiennes","description":"Constance sur 30 jours — pas perfection, constance","domaine":"general","xp":450,"difficulte":7,"sousTaches":[]},
+    {"id":"m_4","titre":"Réaliser un bilan de satisfaction client","description":"Appeler 5 clients, prendre le pouls","domaine":"carriere","xp":350,"difficulte":6,"sousTaches":["Client 1","Client 2","Client 3","Client 4","Client 5"]},
+    {"id":"m_5","titre":"Améliorer 1 point sur la Wheel of Life","description":"Un domaine au choix progresse d'au moins 10 points","domaine":"general","xp":400,"difficulte":7,"sousTaches":[]},
+    {"id":"m_6","titre":"Compléter une formation ou certification","description":"Terminer un parcours de formation","domaine":"croissance","xp":500,"difficulte":8,"sousTaches":[]}
+  ],
+  "starterQuests": [
+    {"id":"s_1","titre":"Ouvrir l'app et respirer 3 fois","description":"C'est tout. Tu as déjà gagné.","domaine":"sante","xp":10,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+    {"id":"s_2","titre":"Écrire 1 mot dans le journal","description":"Juste 1 mot. Comment te sens-tu ?","domaine":"croissance","xp":10,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+    {"id":"s_3","titre":"Boire un verre d'eau","description":"Hydratation = énergie. C'est fait.","domaine":"sante","xp":5,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+    {"id":"s_4","titre":"Regarder par la fenêtre 30 secondes","description":"Pause visuelle. Le monde est là.","domaine":"sante","xp":5,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+    {"id":"s_5","titre":"Ranger 1 seul objet sur le bureau","description":"Un seul. Pas tout le bureau. Juste un.","domaine":"general","xp":10,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+    {"id":"s_6","titre":"Envoyer un emoji à quelqu'un","description":"Un petit signe de vie. 👋","domaine":"relations","xp":5,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+    {"id":"s_7","titre":"Lire 1 phrase inspirante","description":"Juste une. Celle qui apparaît dans la Daily Law.","domaine":"croissance","xp":5,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+    {"id":"s_8","titre":"Se lever et s'étirer 10 secondes","description":"Debout, bras en l'air, c'est fait.","domaine":"sante","xp":5,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+    {"id":"s_9","titre":"Ouvrir un dossier client (juste l'ouvrir)","description":"L'initiation est le plus dur. Juste ouvrir.","domaine":"carriere","xp":10,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true},
+    {"id":"s_10","titre":"Dire merci à voix haute","description":"Gratitude express. À n'importe qui, même soi-même.","domaine":"relations","xp":5,"difficulte":1,"dureeEstimeeMin":1,"sousTaches":[],"estQuickWin":true}
+  ],
+  "hicEtNunc": [
+    {"id":"hen_1","titre":"Traiter le mail qui te fait peur","description":"Celui que tu évites. Maintenant.","domaine":"carriere","xp":30,"difficulte":6,"dureeEstimeeMin":5,"sousTaches":["Ouvrir le mail","Rédiger la réponse","Envoyer"]},
+    {"id":"hen_2","titre":"Appeler quelqu'un que tu repousses","description":"Le coup de fil que tu remets depuis des jours.","domaine":"relations","xp":30,"difficulte":6,"dureeEstimeeMin":5,"sousTaches":[]},
+    {"id":"hen_3","titre":"Ranger LE truc qui traîne","description":"Pas tout. Juste CE truc que tu vois depuis 3 jours.","domaine":"general","xp":20,"difficulte":3,"dureeEstimeeMin":3,"sousTaches":[]},
+    {"id":"hen_4","titre":"Faire 20 squats maintenant","description":"Là, debout, maintenant. 20 squats.","domaine":"sante","xp":20,"difficulte":3,"dureeEstimeeMin":2,"sousTaches":[]},
+    {"id":"hen_5","titre":"Écrire 3 lignes de gratitude","description":"3 choses pour lesquelles tu es reconnaissant. Go.","domaine":"croissance","xp":20,"difficulte":2,"dureeEstimeeMin":2,"sousTaches":[]},
+    {"id":"hen_6","titre":"Prendre une décision que tu repousses","description":"La décision en attente. Tranche. Maintenant.","domaine":"carriere","xp":35,"difficulte":7,"dureeEstimeeMin":3,"sousTaches":[]},
+    {"id":"hen_7","titre":"Envoyer le devis/la relance en attente","description":"Ce document qui attend ton clic. Envoie-le.","domaine":"carriere","xp":25,"difficulte":4,"dureeEstimeeMin":3,"sousTaches":[]},
+    {"id":"hen_8","titre":"Dire non à quelque chose","description":"Ce truc qui ne t'apporte rien. Dis non poliment.","domaine":"croissance","xp":30,"difficulte":7,"dureeEstimeeMin":2,"sousTaches":[]}
+  ]
+}

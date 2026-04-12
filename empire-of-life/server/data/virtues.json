@@ -1,0 +1,79 @@
+[
+  {
+    "id": "discipline",
+    "name": "Discipline",
+    "emoji": "🗡️",
+    "weekNumber": 1,
+    "description": "Constance dans l'action quotidienne. La discipline est la liberté.",
+    "dailyChallenge": "Complétez toutes vos habitudes prévues aujourd'hui sans exception.",
+    "stoicQuote": "Nous souffrons plus souvent en imagination qu'en réalité. — Sénèque",
+    "tracking": "habitudes_completees",
+    "greeneLaw": 9
+  },
+  {
+    "id": "sagesse",
+    "name": "Sagesse",
+    "emoji": "📜",
+    "weekNumber": 2,
+    "description": "Apprentissage et réflexion. Le sage sait qu'il ne sait rien.",
+    "dailyChallenge": "Lisez 15 minutes sur un sujet qui vous intéresse. Notez une leçon.",
+    "stoicQuote": "Le bonheur de votre vie dépend de la qualité de vos pensées. — Marc Aurèle",
+    "tracking": "heures_etude",
+    "greeneLaw": 4
+  },
+  {
+    "id": "courage",
+    "name": "Courage",
+    "emoji": "🛡️",
+    "weekNumber": 3,
+    "description": "Audace et prise de risque. Le courage n'est pas l'absence de peur.",
+    "dailyChallenge": "Faites une chose que vous repoussez depuis au moins une semaine.",
+    "stoicQuote": "Ce n'est pas parce que les choses sont difficiles que nous n'osons pas, c'est parce que nous n'osons pas qu'elles sont difficiles. — Sénèque",
+    "tracking": "taches_difficiles",
+    "greeneLaw": 28
+  },
+  {
+    "id": "temperance",
+    "name": "Tempérance",
+    "emoji": "⚖️",
+    "weekNumber": 4,
+    "description": "Équilibre et modération. La vertu se trouve au milieu.",
+    "dailyChallenge": "Vérifiez votre Wheel of Life. Un domaine est-il négligé ? Agissez dessus.",
+    "stoicQuote": "La richesse ne consiste pas à avoir de grandes possessions, mais à avoir peu de besoins. — Épictète",
+    "tracking": "equilibre_domaines",
+    "greeneLaw": 47
+  },
+  {
+    "id": "justice",
+    "name": "Justice",
+    "emoji": "⚔️",
+    "weekNumber": 5,
+    "description": "Relations et intégrité. Traiter les autres comme on voudrait être traité.",
+    "dailyChallenge": "Faites une action positive pour quelqu'un sans rien attendre en retour.",
+    "stoicQuote": "La meilleure vengeance est de ne pas ressembler à celui qui t'a blessé. — Marc Aurèle",
+    "tracking": "actions_sociales",
+    "greeneLaw": 12
+  },
+  {
+    "id": "patience",
+    "name": "Patience",
+    "emoji": "🕰️",
+    "weekNumber": 6,
+    "description": "Vision long terme. La patience est la plus grande des vertus.",
+    "dailyChallenge": "Avancez d'un micro-pas sur votre objectif le plus long terme.",
+    "stoicQuote": "Le temps découvre la vérité. — Sénèque",
+    "tracking": "progression_okr",
+    "greeneLaw": 35
+  },
+  {
+    "id": "curiosite",
+    "name": "Curiosité",
+    "emoji": "🔭",
+    "weekNumber": 7,
+    "description": "Exploration et nouveauté. Le monde est un livre dont chaque jour est une page.",
+    "dailyChallenge": "Explorez quelque chose de nouveau : un article, un lieu, une idée.",
+    "stoicQuote": "La vie est longue si vous savez comment l'utiliser. — Sénèque",
+    "tracking": "nouvelles_experiences",
+    "greeneLaw": 25
+  }
+]
