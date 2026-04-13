@@ -5,7 +5,7 @@ import useGameStore from '../../stores/useGameStore';
 
 export default function MomentumBar() {
   const { momentum } = useGameStore();
-  const value = momentum?.value ?? momentum?.momentum ?? 50;
+  const value = typeof momentum === 'number' ? momentum : (momentum?.value ?? 50);
 
   // Couleur dynamique selon le niveau
   const getColor = (v) => {

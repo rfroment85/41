@@ -3,20 +3,29 @@
 import { create } from 'zustand';
 import { api } from '../utils/api';
 
+// Helpers pour extraire les données quelle que soit la forme de la réponse API
+const extractArray = (res, ...keys) => {
+  if (Array.isArray(res)) return res;
+  for (const k of keys) {
+    if (res?.[k] && Array.isArray(res[k])) return res[k];
+  }
+  return [];
+};
+
 const useGameStore = create((set, get) => ({
   // ─── État ───
   profil: null,
   habitudes: [],
   quetes: [],
-  momentum: { value: 50, history: [] },
-  xp: { total: 0, level: 1, title: 'Paysan', history: [] },
+  momentum: 50,
+  xp: { total: 0, level: 1, title: 'Paysan', xpInLevel: 0, xpNextLevel: 100, history: [] },
   ressources: [],
   dailyLaw: null,
   vertu: null,
   rituels: { matin: null, soir: null },
   notifications: [],
   celebrationActive: null,
-  vueActive: 'empire', // 'empire' | 'quetes' | 'track' | 'stats' | 'profil'
+  vueActive: 'empire',
   chargement: true,
   erreur: null,
 
@@ -27,7 +36,7 @@ const useGameStore = create((set, get) => ({
   chargerTout: async () => {
     set({ chargement: true, erreur: null });
     try {
-      const [profilRes, habRes, quetesRes, momRes, xpRes, resRes, lawRes, vertuRes, ritRes] = await Promise.allSettled([
+      const results = await Promise.allSettled([
         api.getStatus(),
         api.getHabitudes(),
         api.getQuetes(),
@@ -39,15 +48,44 @@ const useGameStore = create((set, get) => ({
         api.getRituelsAujourdhui(),
       ]);
 
+      const [profilRes, habRes, quetesRes, momRes, xpRes, resRes, lawRes, vertuRes, ritRes] = results;
+
+      // Extraire les données robustement (l'API peut retourner des formats variés)
+      const profil = profilRes.status === 'fulfilled' ? profilRes.value : null;
+      const habitudes = habRes.status === 'fulfilled' ? extractArray(habRes.value, 'habits') : [];
+      const quetes = quetesRes.status === 'fulfilled' ? extractArray(quetesRes.value, 'quests') : [];
+      const ressources = resRes.status === 'fulfilled' ? extractArray(resRes.value, 'ressources', 'resources') : [];
+
+      // Momentum : peut être un objet {value, momentum, history} ou un nombre
+      let momentum = 50;
+      if (momRes.status === 'fulfilled') {
+        const m = momRes.value;
+        momentum = m?.value ?? m?.momentum ?? (typeof m === 'number' ? m : 50);
+      }
+
+      // XP : extraire les champs pertinents
+      let xp = { total: 0, level: 1, title: 'Paysan', xpInLevel: 0, xpNextLevel: 100, history: [] };
+      if (xpRes.status === 'fulfilled') {
+        const x = xpRes.value;
+        xp = {
+          total: x?.total ?? x?.xp_total ?? 0,
+          level: x?.level ?? 1,
+          title: x?.title ?? 'Paysan',
+          xpInLevel: x?.xpInLevel ?? x?.xp_in_level ?? 0,
+          xpNextLevel: x?.xpNextLevel ?? x?.xp_next_level ?? 100,
+          history: x?.history ?? x?.recent ?? [],
+        };
+      }
+
       set({
-        profil: profilRes.status === 'fulfilled' ? profilRes.value : null,
-        habitudes: habRes.status === 'fulfilled' ? (habRes.value.habits || []) : [],
-        quetes: quetesRes.status === 'fulfilled' ? (quetesRes.value.quests || []) : [],
-        momentum: momRes.status === 'fulfilled' ? momRes.value : { value: 50, history: [] },
-        xp: xpRes.status === 'fulfilled' ? xpRes.value : { total: 0, level: 1, title: 'Paysan', history: [] },
-        ressources: resRes.status === 'fulfilled' ? (resRes.value.ressources || []) : [],
-        dailyLaw: lawRes.status === 'fulfilled' ? lawRes.value.dailyLaw : null,
-        vertu: vertuRes.status === 'fulfilled' ? vertuRes.value.vertu : null,
+        profil,
+        habitudes,
+        quetes,
+        momentum,
+        xp,
+        ressources,
+        dailyLaw: lawRes.status === 'fulfilled' ? (lawRes.value?.dailyLaw ?? lawRes.value) : null,
+        vertu: vertuRes.status === 'fulfilled' ? (vertuRes.value?.vertu ?? vertuRes.value) : null,
         rituels: ritRes.status === 'fulfilled' ? ritRes.value : { matin: null, soir: null },
         chargement: false,
       });
@@ -60,11 +98,10 @@ const useGameStore = create((set, get) => ({
   loggerHabitude: async (habitId) => {
     try {
       const result = await api.logHabitude(habitId);
-      // Notification XP
-      if (result.xp_awarded) {
-        get().ajouterNotification(`+${result.xp_awarded} XP`, 'xp');
+      const xpAwarded = result?.xp_awarded ?? result?.xp?.xp_awarded ?? 0;
+      if (xpAwarded > 0) {
+        get().ajouterNotification(`+${xpAwarded} XP`, 'xp');
       }
-      // Recharger les données impactées
       await get().rafraichirDonnees();
       return result;
     } catch (err) {
@@ -75,6 +112,7 @@ const useGameStore = create((set, get) => ({
   creerHabitude: async (data) => {
     try {
       await api.creerHabitude(data);
+      get().ajouterNotification('Habitude créée !', 'info');
       await get().rafraichirDonnees();
     } catch (err) {
       get().ajouterNotification(err.message, 'erreur');
@@ -86,18 +124,34 @@ const useGameStore = create((set, get) => ({
     try {
       await api.genererQuetes();
       const quetesRes = await api.getQuetes();
-      set({ quetes: quetesRes.quests || [] });
+      set({ quetes: extractArray(quetesRes, 'quests') });
     } catch (err) {
       console.error('Erreur génération quêtes:', err);
+    }
+  },
+
+  creerQuete: async (data) => {
+    try {
+      await api.creerQuete(data);
+      get().ajouterNotification('Quête créée !', 'info');
+      // Recharger les quêtes
+      const quetesRes = await api.getQuetes();
+      set({ quetes: extractArray(quetesRes, 'quests') });
+    } catch (err) {
+      get().ajouterNotification(err.message, 'erreur');
     }
   },
 
   completerQuete: async (questId) => {
     try {
       const result = await api.completerQuete(questId);
-      if (result.xp_awarded) {
-        get().ajouterNotification(`+${result.xp_awarded} XP — Quête accomplie !`, 'xp');
+      const xpAwarded = result?.xp?.xp_awarded ?? result?.xp_awarded ?? 0;
+      if (xpAwarded > 0) {
+        get().ajouterNotification(`+${xpAwarded} XP — Quête accomplie !`, 'xp');
       }
+      // Recharger les quêtes + données
+      const quetesRes = await api.getQuetes();
+      set({ quetes: extractArray(quetesRes, 'quests') });
       await get().rafraichirDonnees();
       return result;
     } catch (err) {
@@ -108,11 +162,14 @@ const useGameStore = create((set, get) => ({
   // ─── Hic Et Nunc ───
   actionHicEtNunc: async (actionType, description) => {
     try {
-      const result = await api.hicEtNunc({ actionType, description });
-      if (result.xpEarned > 0) {
-        get().ajouterNotification(`⚡ ${result.message}`, 'xp');
-      } else if (result.message) {
-        get().ajouterNotification(result.message, 'info');
+      // L'API attend 'type' pas 'actionType'
+      const result = await api.hicEtNunc({ type: actionType, description });
+      const msg = result?.message;
+      const xpEarned = result?.xp?.xp_awarded ?? result?.xpEarned ?? 0;
+      if (xpEarned > 0) {
+        get().ajouterNotification(msg || `+${xpEarned} XP`, 'xp');
+      } else if (msg) {
+        get().ajouterNotification(msg, 'info');
       }
       await get().rafraichirDonnees();
       return result;
@@ -148,9 +205,9 @@ const useGameStore = create((set, get) => ({
   completerDailyLaw: async () => {
     try {
       const result = await api.completeDailyLaw();
-      get().ajouterNotification(`📜 Mini-défi complété ! +${result.bonusXP} XP`, 'xp');
+      get().ajouterNotification(`📜 Mini-défi complété ! +${result?.bonusXP || 25} XP`, 'xp');
       const lawRes = await api.getDailyLaw();
-      set({ dailyLaw: lawRes.dailyLaw });
+      set({ dailyLaw: lawRes?.dailyLaw ?? lawRes });
       await get().rafraichirDonnees();
     } catch (err) {
       get().ajouterNotification(err.message, 'erreur');
@@ -163,7 +220,6 @@ const useGameStore = create((set, get) => ({
     set(state => ({
       notifications: [...state.notifications, { id, texte, type, timestamp: Date.now() }],
     }));
-    // Auto-supprimer après 3 secondes
     setTimeout(() => {
       set(state => ({
         notifications: state.notifications.filter(n => n.id !== id),
@@ -190,17 +246,34 @@ const useGameStore = create((set, get) => ({
 
       const updates = {};
       if (profilRes.status === 'fulfilled') updates.profil = profilRes.value;
-      if (momRes.status === 'fulfilled') updates.momentum = momRes.value;
+
+      if (momRes.status === 'fulfilled') {
+        const m = momRes.value;
+        updates.momentum = m?.value ?? m?.momentum ?? (typeof m === 'number' ? m : 50);
+      }
+
       if (xpRes.status === 'fulfilled') {
+        const x = xpRes.value;
         const oldLevel = get().xp?.level;
-        updates.xp = xpRes.value;
-        // Détecter level-up
-        if (xpRes.value.level > (oldLevel || 1)) {
-          get().lancerCelebration('levelUp', { level: xpRes.value.level, title: xpRes.value.title });
+        updates.xp = {
+          total: x?.total ?? x?.xp_total ?? 0,
+          level: x?.level ?? 1,
+          title: x?.title ?? 'Paysan',
+          xpInLevel: x?.xpInLevel ?? x?.xp_in_level ?? 0,
+          xpNextLevel: x?.xpNextLevel ?? x?.xp_next_level ?? 100,
+          history: x?.history ?? x?.recent ?? [],
+        };
+        if (updates.xp.level > (oldLevel || 1)) {
+          get().lancerCelebration('levelUp', { level: updates.xp.level, title: updates.xp.title });
         }
       }
-      if (resRes.status === 'fulfilled') updates.ressources = resRes.value.ressources || [];
-      if (habRes.status === 'fulfilled') updates.habitudes = habRes.value.habits || [];
+
+      if (resRes.status === 'fulfilled') {
+        updates.ressources = extractArray(resRes.value, 'ressources', 'resources');
+      }
+      if (habRes.status === 'fulfilled') {
+        updates.habitudes = extractArray(habRes.value, 'habits');
+      }
 
       set(updates);
     } catch (err) {

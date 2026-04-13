@@ -161,7 +161,7 @@ export default function EmpireDashboard() {
   const { profil, xp, momentum, quetes, habitudes } = useGameStore();
 
   const streakDays = profil?.profile?.streak_days || 0;
-  const momValue = momentum?.value ?? momentum?.momentum ?? 50;
+  const momValue = typeof momentum === 'number' ? momentum : (momentum?.value ?? 50);
   const todayXP = (xp?.history || [])
     .filter(h => h.logged_at?.startsWith(new Date().toISOString().split('T')[0]))
     .reduce((sum, h) => sum + h.amount, 0);

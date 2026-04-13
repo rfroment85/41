@@ -28,7 +28,7 @@ export default function StatsPage() {
   const xpTotal = xp?.total || 0;
   const streakDays = profil?.profile?.streak_days || 0;
   const bestStreak = profil?.profile?.best_streak || 0;
-  const momValue = momentum?.value ?? momentum?.momentum ?? 50;
+  const momValue = typeof momentum === 'number' ? momentum : (momentum?.value ?? 50);
 
   // Simuler les données XP des 7 derniers jours à partir de l'historique
   const xpHistory = xp?.history || [];
