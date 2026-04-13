@@ -11,8 +11,13 @@ const TABS = [
 ];
 
 function QueteCard({ quete, onComplete }) {
-  const sousTaches = quete.sub_tasks ? JSON.parse(quete.sub_tasks) : [];
-  const completees = sousTaches.filter(s => s.done).length;
+  // sub_tasks peut être un tableau (déjà parsé) ou une string JSON
+  let sousTaches = [];
+  try {
+    sousTaches = Array.isArray(quete.sub_tasks) ? quete.sub_tasks
+      : (quete.sub_tasks ? JSON.parse(quete.sub_tasks) : []);
+  } catch { sousTaches = []; }
+  const completees = sousTaches.filter(s => s.done || s.completed).length;
   const progressPct = sousTaches.length > 0 ? (completees / sousTaches.length) * 100 : 0;
 
   const domainColors = {
@@ -49,11 +54,11 @@ function QueteCard({ quete, onComplete }) {
           <div className="flex flex-col gap-1">
             {sousTaches.map((st, i) => (
               <div key={i} className="flex items-center gap-2 text-xs">
-                <span className={st.done ? 'text-empire-green' : 'text-empire-muted'}>
-                  {st.done ? '✓' : '○'}
+                <span className={(st.done || st.completed) ? 'text-empire-green' : 'text-empire-muted'}>
+                  {(st.done || st.completed) ? '✓' : '○'}
                 </span>
-                <span className={st.done ? 'text-empire-sub line-through' : 'text-empire-text'}>
-                  {st.text || st}
+                <span className={(st.done || st.completed) ? 'text-empire-sub line-through' : 'text-empire-text'}>
+                  {st.text || st.title || (typeof st === 'string' ? st : '')}
                 </span>
               </div>
             ))}
