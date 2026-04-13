@@ -1,22 +1,159 @@
-// Base de données SQLite — configuration et schéma complet
-import Database from 'better-sqlite3';
+// ═══════════════════════════════ BASE DE DONNÉES ═════════════════════════════
+// Wrapper sql.js (pur JavaScript, pas de compilation native)
+// API compatible better-sqlite3 pour que les routes n'aient pas à changer
+import initSqlJs from 'sql.js';
 import { fileURLToPath } from 'url';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const dbPath = path.join(__dirname, 'empire.db');
-const db = new Database(dbPath);
 
-// Activer le mode WAL pour de meilleures performances
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+// ─── Wrapper qui émule l'API better-sqlite3 au-dessus de sql.js ───
+class DbWrapper {
+  constructor(sqlDb) {
+    this.sqlDb = sqlDb;
+    this._saveTimer = null;
+  }
 
-// ─── Création des tables ───────────────────────────────────────────
+  // Sauvegarde sur disque (debounced)
+  _scheduleSave() {
+    if (this._saveTimer) clearTimeout(this._saveTimer);
+    this._saveTimer = setTimeout(() => {
+      try {
+        const data = this.sqlDb.export();
+        writeFileSync(dbPath, Buffer.from(data));
+      } catch (e) {
+        console.error('Erreur sauvegarde DB:', e.message);
+      }
+    }, 500);
+  }
 
+  // Sauvegarde immédiate
+  saveNow() {
+    if (this._saveTimer) clearTimeout(this._saveTimer);
+    const data = this.sqlDb.export();
+    writeFileSync(dbPath, Buffer.from(data));
+  }
+
+  // Exécuter du SQL brut (CREATE TABLE, etc.)
+  exec(sql) {
+    this.sqlDb.run(sql);
+    this._scheduleSave();
+  }
+
+  // Préparer une requête (retourne un objet compatible better-sqlite3)
+  prepare(sql) {
+    const self = this;
+    return {
+      // Retourne une seule ligne comme objet
+      get(...params) {
+        try {
+          const stmt = self.sqlDb.prepare(sql);
+          if (params.length > 0) stmt.bind(params);
+          if (stmt.step()) {
+            const cols = stmt.getColumnNames();
+            const vals = stmt.get();
+            stmt.free();
+            const row = {};
+            for (let i = 0; i < cols.length; i++) row[cols[i]] = vals[i];
+            return row;
+          }
+          stmt.free();
+          return undefined;
+        } catch (e) {
+          console.error('DB get error:', sql, params, e.message);
+          return undefined;
+        }
+      },
+
+      // Retourne toutes les lignes comme tableau d'objets
+      all(...params) {
+        try {
+          const results = [];
+          const stmt = self.sqlDb.prepare(sql);
+          if (params.length > 0) stmt.bind(params);
+          while (stmt.step()) {
+            const cols = stmt.getColumnNames();
+            const vals = stmt.get();
+            const row = {};
+            for (let i = 0; i < cols.length; i++) row[cols[i]] = vals[i];
+            results.push(row);
+          }
+          stmt.free();
+          return results;
+        } catch (e) {
+          console.error('DB all error:', sql, params, e.message);
+          return [];
+        }
+      },
+
+      // Exécuter une requête de modification (INSERT, UPDATE, DELETE)
+      run(...params) {
+        try {
+          self.sqlDb.run(sql, params);
+          self._scheduleSave();
+          return {
+            changes: self.sqlDb.getRowsModified(),
+            lastInsertRowid: self._getLastInsertRowid(),
+          };
+        } catch (e) {
+          console.error('DB run error:', sql, params, e.message);
+          return { changes: 0, lastInsertRowid: 0 };
+        }
+      },
+    };
+  }
+
+  _getLastInsertRowid() {
+    try {
+      const stmt = this.sqlDb.prepare('SELECT last_insert_rowid() as id');
+      stmt.step();
+      const id = stmt.get()[0];
+      stmt.free();
+      return id;
+    } catch {
+      return 0;
+    }
+  }
+
+  // Transaction simplifiée
+  transaction(fn) {
+    const self = this;
+    return function (...args) {
+      self.sqlDb.run('BEGIN TRANSACTION');
+      try {
+        const result = fn(...args);
+        self.sqlDb.run('COMMIT');
+        self._scheduleSave();
+        return result;
+      } catch (e) {
+        self.sqlDb.run('ROLLBACK');
+        throw e;
+      }
+    };
+  }
+
+  // Pragma (no-op pour compatibilité)
+  pragma() {}
+}
+
+// ─── Initialisation (synchrone via top-level await) ───
+const SQL = await initSqlJs();
+
+let sqlDb;
+if (existsSync(dbPath)) {
+  const buffer = readFileSync(dbPath);
+  sqlDb = new SQL.Database(buffer);
+} else {
+  sqlDb = new SQL.Database();
+}
+
+const db = new DbWrapper(sqlDb);
+
+// ─── Création des tables ────────────────────────────────────────────
 db.exec(`
-  -- Profil utilisateur
   CREATE TABLE IF NOT EXISTS user_profile (
     id INTEGER PRIMARY KEY DEFAULT 1,
     name TEXT DEFAULT 'Romain',
@@ -32,7 +169,6 @@ db.exec(`
     created_at TEXT DEFAULT (datetime('now'))
   );
 
-  -- Habitudes
   CREATE TABLE IF NOT EXISTS habits (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -48,7 +184,6 @@ db.exec(`
     created_at TEXT DEFAULT (datetime('now'))
   );
 
-  -- Logs d'habitudes
   CREATE TABLE IF NOT EXISTS habit_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     habit_id INTEGER REFERENCES habits(id),
@@ -59,7 +194,6 @@ db.exec(`
     UNIQUE(habit_id, date)
   );
 
-  -- Ressources
   CREATE TABLE IF NOT EXISTS resources (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type TEXT NOT NULL UNIQUE,
@@ -67,7 +201,6 @@ db.exec(`
     production_rate REAL DEFAULT 1.0
   );
 
-  -- Quêtes actives
   CREATE TABLE IF NOT EXISTS quests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -83,7 +216,6 @@ db.exec(`
     completed_at TEXT
   );
 
-  -- Logs de momentum
   CREATE TABLE IF NOT EXISTS momentum_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     value INTEGER NOT NULL,
@@ -92,7 +224,6 @@ db.exec(`
     logged_at TEXT DEFAULT (datetime('now'))
   );
 
-  -- Historique XP
   CREATE TABLE IF NOT EXISTS xp_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     amount INTEGER NOT NULL,
@@ -103,7 +234,6 @@ db.exec(`
     logged_at TEXT DEFAULT (datetime('now'))
   );
 
-  -- Technologies (48 Lois du Pouvoir)
   CREATE TABLE IF NOT EXISTS technologies (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     law_number INTEGER NOT NULL UNIQUE,
@@ -111,7 +241,6 @@ db.exec(`
     researched_at TEXT
   );
 
-  -- Vertus stoïciennes
   CREATE TABLE IF NOT EXISTS virtue_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     virtue_id TEXT NOT NULL,
@@ -121,7 +250,6 @@ db.exec(`
     UNIQUE(virtue_id, date)
   );
 
-  -- Complétion des Daily Laws
   CREATE TABLE IF NOT EXISTS daily_law_completions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     day_of_year INTEGER NOT NULL,
@@ -131,7 +259,6 @@ db.exec(`
     UNIQUE(day_of_year, year)
   );
 
-  -- Rituels stoïciens (matin/soir)
   CREATE TABLE IF NOT EXISTS rituals (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type TEXT NOT NULL,
@@ -147,7 +274,6 @@ db.exec(`
     UNIQUE(type, date)
   );
 
-  -- Actions Hic Et Nunc
   CREATE TABLE IF NOT EXISTS hic_et_nunc_actions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     action_type TEXT NOT NULL,
@@ -158,7 +284,6 @@ db.exec(`
     created_at TEXT DEFAULT (datetime('now'))
   );
 
-  -- Bâtiments construits
   CREATE TABLE IF NOT EXISTS buildings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     building_key TEXT NOT NULL UNIQUE,
@@ -166,7 +291,6 @@ db.exec(`
     built_at TEXT DEFAULT (datetime('now'))
   );
 
-  -- Scores par domaine (Roue de la Vie)
   CREATE TABLE IF NOT EXISTS domain_scores (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     domain TEXT NOT NULL,
@@ -177,7 +301,6 @@ db.exec(`
     UNIQUE(domain)
   );
 
-  -- Raids (événements aléatoires)
   CREATE TABLE IF NOT EXISTS raids (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type TEXT NOT NULL,
@@ -190,7 +313,6 @@ db.exec(`
     resolved_at TEXT
   );
 
-  -- Sessions de focus (Pomodoro/Hyperfocus)
   CREATE TABLE IF NOT EXISTS focus_sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type TEXT DEFAULT 'pomodoro',
@@ -201,7 +323,6 @@ db.exec(`
     quest_id INTEGER REFERENCES quests(id)
   );
 
-  -- Boucliers de streak
   CREATE TABLE IF NOT EXISTS streak_shields (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     habit_id INTEGER REFERENCES habits(id),
@@ -212,62 +333,37 @@ db.exec(`
   );
 `);
 
-// ─── Données initiales (seed) ──────────────────────────────────────
-
-// Profil par défaut
+// ─── Données initiales (seed) ───────────────────────────────────────
 const userExists = db.prepare('SELECT COUNT(*) as count FROM user_profile').get();
-if (userExists.count === 0) {
+if (!userExists || userExists.count === 0) {
   db.prepare(`
     INSERT INTO user_profile (id, name, avatar, age_current, xp_total, level, momentum, streak_days, best_streak, last_active_date, lifes_task)
     VALUES (1, 'Romain', '🧠', 1, 0, 1, 50, 0, 0, date('now'), 'Devenir la meilleure version de moi-même')
   `).run();
 }
 
-// Ressources initiales
 const resourceExists = db.prepare('SELECT COUNT(*) as count FROM resources').get();
-if (resourceExists.count === 0) {
-  const insertResource = db.prepare('INSERT INTO resources (type, amount, production_rate) VALUES (?, ?, ?)');
-  const seedResources = db.transaction(() => {
-    insertResource.run('nourriture', 100, 1.0);
-    insertResource.run('bois', 100, 1.0);
-    insertResource.run('or', 100, 1.0);
-    insertResource.run('pierre', 100, 1.0);
-  });
-  seedResources();
+if (!resourceExists || resourceExists.count === 0) {
+  db.prepare('INSERT INTO resources (type, amount, production_rate) VALUES (?, ?, ?)').run('nourriture', 100, 1.0);
+  db.prepare('INSERT INTO resources (type, amount, production_rate) VALUES (?, ?, ?)').run('bois', 100, 1.0);
+  db.prepare('INSERT INTO resources (type, amount, production_rate) VALUES (?, ?, ?)').run('or', 100, 1.0);
+  db.prepare('INSERT INTO resources (type, amount, production_rate) VALUES (?, ?, ?)').run('pierre', 100, 1.0);
 }
 
-// Scores des 8 domaines de la Roue de la Vie
 const domainExists = db.prepare('SELECT COUNT(*) as count FROM domain_scores').get();
-if (domainExists.count === 0) {
-  const insertDomain = db.prepare('INSERT INTO domain_scores (domain, score, mastery_phase, mastery_xp) VALUES (?, 50, ?, 0)');
-  const domains = [
-    'sante',        // Santé & Fitness
-    'mental',       // Mental & Apprentissage
-    'social',       // Social & Relations
-    'spirituel',    // Spirituel & Purpose
-    'financier',    // Financier & Carrière
-    'creatif',      // Créatif & Projets
-    'environnement', // Environnement & Ordre
-    'loisirs'       // Loisirs & Fun
-  ];
-  const seedDomains = db.transaction(() => {
-    for (const domain of domains) {
-      insertDomain.run(domain, 'apprentice');
-    }
-  });
-  seedDomains();
+if (!domainExists || domainExists.count === 0) {
+  const domains = ['sante', 'mental', 'social', 'spirituel', 'financier', 'creatif', 'environnement', 'loisirs'];
+  for (const domain of domains) {
+    db.prepare('INSERT INTO domain_scores (domain, score, mastery_phase, mastery_xp) VALUES (?, 50, ?, 0)').run(domain, 'apprentice');
+  }
 }
 
-// ─── Fonction d'init (appelée par index.js au démarrage) ───
-export function initDb() {
-  // Les tables et seeds sont déjà créées au chargement du module
-  // Cette fonction sert de point d'entrée explicite
-  return db;
-}
+// Sauvegarde immédiate après le seed
+db.saveNow();
 
-// ─── Accessor (utilisé par les routes) ───
-export function getDb() {
-  return db;
-}
+console.log('✅ Base de données initialisée (sql.js — pur JavaScript)');
 
+// ─── Exports ────────────────────────────────────────────────────────
+export function initDb() { return db; }
+export function getDb() { return db; }
 export default db;
